@@ -1,0 +1,12 @@
+.communal-label {
+    width: 55px;
+}
+
+.taxLink {
+    color: #035ec0;
+}
+
+.taxLink:hover {
+    color: #004085;
+    cursor: pointer;
+}
