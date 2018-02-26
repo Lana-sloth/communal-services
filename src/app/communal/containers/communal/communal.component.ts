@@ -46,11 +46,20 @@ import { Component } from '@angular/core';               //api
               <div class="input-group-prepend">
                 <span class="input-group-text communal-label">now</span>
               </div>
-              <input type='number' [(ngModel)]='communal.current' class="form-control"/>
+              <input type='number' [(ngModel)]='communal.current' (focus)='valueSelect($event)' class="form-control"/>
             </div>
             
             <hr>
-            <div>Spent: {{ countSpent(communal) }} &#8381;</div>
+            <table>
+              <tr>
+                <th>Delta:</th>
+                <td>{{ communal.current - communal.last }}</td>
+              </tr>
+              <tr>
+                <th>Spent:</th>
+                <td>{{ countSpent(communal) }} &#8381;</td>
+              </tr>
+            </table>
   
           </div>
         </div>
