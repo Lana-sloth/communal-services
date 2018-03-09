@@ -7,6 +7,7 @@ import { Component } from '@angular/core';               //api
     '../../../app.component.css'
   ],
   template: `
+  <card-component></card-component>
   <br>
     <div class='row'>
       <div *ngFor='let communal of communals' class='col-md-3'>
