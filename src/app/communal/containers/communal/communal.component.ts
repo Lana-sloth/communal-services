@@ -1,6 +1,8 @@
 import * as _ from 'lodash';
-import { Component } from '@angular/core';               
+import { Component, OnInit } from '@angular/core';               
 import { Communal } from '../models/communal.models';
+
+import { CommunalService } from '../../communal.service';
 
 @Component({
   selector: 'communal',
@@ -18,43 +20,20 @@ import { Communal } from '../models/communal.models';
 
     <br>
     <div class="alert alert-primary">
-      <h3 class="text-center">Total: {{countTotal()}} &#8381;</h3>
+      <h3 class="text-center">Total: {{ countTotal() }} &#8381;</h3>
     </div>
 
   `
 })
-export class CommunalComponent {
+export class CommunalComponent implements OnInit{
   total = 0;
-  communals: Communal[] = [
-    { 
-      title: 'Cold Water',
-      tax: 35.40,
-      last: 0,
-      current: 0,
-      spent: 0
-    },
-    { 
-      title: 'Hot Water',
-      tax: 180.55,
-      last: 0,
-      current: 0,
-      spent: 0
-    },
-    { 
-      title: 'Day Electricity',
-      tax: 6.19,
-      last: 0,
-      current: 0,
-      spent: 0
-    },
-    { 
-      title: 'Night Electricity',
-      tax: 1.79,
-      last: 0,
-      current: 0,
-      spent: 0
-    }
-  ]
+  communals: Communal[];
+
+  constructor(private communalService: CommunalService){}
+
+  ngOnInit(){
+    this.communals = this.communalService.getCommunals();
+  }
   
   countTotal() {
     this.total = 0;

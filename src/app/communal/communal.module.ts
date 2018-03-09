@@ -6,6 +6,8 @@ import { FormsModule } from '@angular/forms';
 import { CommunalComponent } from './containers/communal/communal.component';
 import { CardComponent } from './containers/components/card.component';
 
+import { CommunalService } from './communal.service';
+
 @NgModule({
   declarations: [
     CommunalComponent,
@@ -15,6 +17,7 @@ import { CardComponent } from './containers/components/card.component';
     CommonModule,
     FormsModule
   ],
-  exports: [CommunalComponent]
+  exports: [CommunalComponent],
+  providers: [CommunalService]
 })
 export class CommunalModule { }
