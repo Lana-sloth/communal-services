@@ -3,6 +3,5 @@ export interface Communal {
     tax: number,
     last: number,
     current: number,
-    spent: number,
-    active: boolean
+    spent: number
 }
