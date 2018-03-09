@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
-import { Component } from '@angular/core';               //api
+import { Component } from '@angular/core';               
+import { Communal } from '../models/communal.models';
 
 @Component({
   selector: 'communal',
@@ -7,9 +8,10 @@ import { Component } from '@angular/core';               //api
     '../../../app.component.css'
   ],
   template: `
-  <card-component></card-component>
   <br>
     <div class='row'>
+      <card-component></card-component>
+      
       <div *ngFor='let communal of communals' class='col-md-3'>
         <div class="card" >
           <div class="card-body">
@@ -76,7 +78,7 @@ import { Component } from '@angular/core';               //api
 })
 export class CommunalComponent {
   total = 0;
-  communals = [
+  communals: Communal[] = [
     { 
       title: 'Cold Water',
       tax: 35.40,
