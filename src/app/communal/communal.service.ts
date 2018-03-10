@@ -1,5 +1,9 @@
+import { Injectable } from '@angular/core';
+import { Http } from '@angular/http';
+
+@Injectable()
 export class CommunalService {
-    constructor(){}
+    constructor(private http: Http){}
 
     getCommunals(){
         return [

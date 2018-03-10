@@ -20,13 +20,13 @@ import { CommunalService } from '../../communal.service';
 
     <br>
     <div class="alert alert-primary">
-      <h3 class="text-center">Total: {{ countTotal() }} &#8381;</h3>
+      <h3 class="text-center"> Total: {{ countTotal() }} &#8381; </h3>
     </div>
 
   `
 })
 export class CommunalComponent implements OnInit{
-  total = 0;
+  total: number = 0;
   communals: Communal[];
 
   constructor(private communalService: CommunalService){}
@@ -35,7 +35,7 @@ export class CommunalComponent implements OnInit{
     this.communals = this.communalService.getCommunals();
   }
   
-  countTotal() {
+  countTotal(): number {
     this.total = 0;
     for (let i = 0; i < this.communals.length; i++){
       this.total += Number(this.communals[i].spent);
