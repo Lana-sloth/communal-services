@@ -25,3 +25,42 @@ Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protrac
 ## Further help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+
+## API Installation OS X
+
+- Install [Homebrew](https://brew.sh)
+- Install python3 by running:
+```
+brew install python3
+```
+- Install virtualenvwrapper:
+```
+pip3 install virtualenvwrapper
+```
+- Create new virtualenv:
+```
+mkvirtualenv --python=python3 communal
+```
+- Enable virtualenv by command:
+```
+workon communal
+```
+- Install API dependencies by running:
+```
+pip install -r ./api/requirements.txt
+```
+- Copy and adjust DB settings:
+```
+cp ./api/secret.example.py ./api/secret.py
+```
+
+## Running API
+
+- Enable virtualenv by command:
+```
+workon communal
+```
+- Run command:
+```
+python run.py
+```
