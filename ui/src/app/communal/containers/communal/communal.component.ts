@@ -30,7 +30,7 @@ import { CommunalService } from '../../communal.service';
             <p>Tax: 
             <span 
             class='taxLink'>
-                Tax &#8381;
+              {{ thisMonth.taxes.cold_water_tax }} Tax &#8381;
             </span>
             </p>
             <!-- tax input group -->
@@ -38,23 +38,22 @@ import { CommunalService } from '../../communal.service';
               <div class='input-group-prepend'>
                 <span class='input-group-text communal-label'>tax</span>
               </div>
-              <input type='number' class='form-control'>
+              <input [(ngModel)]='thisMonth.taxes.cold_water_tax' type='number' class='form-control'>
             </div> <!-- end of  tax input group  -->
-
-            <!-- last month input group -->
-            <div class="input-group  mb-3">
-              <div class="input-group-prepend">
-                <span class="input-group-text communal-label">last</span>
-              </div>
-              <input type='number' class="form-control">
-            </div> <!-- end of last month input group -->
+            
+            <!-- last mounth -->
+            <p>last: 
+            <span 
+            class='taxLink'>
+              {{ lastMonth.cold_water }}
+            </span>
             
             <!-- this month input group -->
             <div class='input-group  mb-3'>
               <div class='input-group-prepend'>
                 <span class='input-group-text communal-label'>now</span>
               </div>
-              <input type='number' class='form-control'>
+              <input [(ngModel)]='thisMonth.cold_water' type='number' class='form-control'>
             </div> <!-- end of this month input group -->
 
             <hr>
@@ -87,7 +86,7 @@ import { CommunalService } from '../../communal.service';
             <p>Tax: 
               <span 
               class='taxLink'>
-                Tax &#8381;
+                {{ thisMonth.taxes.hot_water_tax }} Tax &#8381;
               </span>
             </p>
             <!-- tax input group -->
@@ -95,23 +94,22 @@ import { CommunalService } from '../../communal.service';
               <div class='input-group-prepend'>
                 <span class='input-group-text communal-label'>tax</span>
               </div>
-              <input type='number' class='form-control'>
+              <input [(ngModel)]='thisMonth.taxes.hot_water_tax' type='number' class='form-control'>
             </div> <!-- end of  tax input group  -->
   
-            <!-- last month input group -->
-            <div class="input-group  mb-3">
-              <div class="input-group-prepend">
-                <span class="input-group-text communal-label">last</span>
-              </div>
-              <input type='number' class="form-control">
-            </div> <!-- end of last month input group -->
-            
+            <!-- last mounth -->
+            <p>last: 
+            <span 
+            class='taxLink'>
+              {{ lastMonth.hot_water }}
+            </span>
+
             <!-- this month input group -->
             <div class='input-group  mb-3'>
               <div class='input-group-prepend'>
                 <span class='input-group-text communal-label'>now</span>
               </div>
-              <input type='number' class='form-control'>
+              <input [(ngModel)]='thisMonth.hot_water' type='number' class='form-control'>
             </div> <!-- end of this month input group -->
   
             <hr>
@@ -144,7 +142,7 @@ import { CommunalService } from '../../communal.service';
             <p>Tax: 
               <span 
               class='taxLink'>
-                Tax &#8381;
+                {{ thisMonth.electricity_day }} Tax &#8381;
               </span>
             </p>
             <!-- tax input group -->
@@ -152,23 +150,22 @@ import { CommunalService } from '../../communal.service';
               <div class='input-group-prepend'>
                 <span class='input-group-text communal-label'>tax</span>
               </div>
-              <input type='number' class='form-control'>
+              <input [(ngModel)]='thisMonth.taxes.electricity_day_tax' type='number' class='form-control'>
             </div> <!-- end of  tax input group  -->
   
-            <!-- last month input group -->
-            <div class="input-group  mb-3">
-              <div class="input-group-prepend">
-                <span class="input-group-text communal-label">last</span>
-              </div>
-              <input type='number' class="form-control">
-            </div> <!-- end of last month input group -->
+            <!-- last mounth -->
+            <p>last: 
+            <span 
+            class='taxLink'>
+              {{ lastMonth.electricity_day }}
+            </span>
             
             <!-- this month input group -->
             <div class='input-group  mb-3'>
               <div class='input-group-prepend'>
                 <span class='input-group-text communal-label'>now</span>
               </div>
-              <input type='number' class='form-control'>
+              <input [(ngModel)]='thisMonth.electricity_day' type='number' class='form-control'>
             </div> <!-- end of this month input group -->
   
             <hr>
@@ -201,7 +198,7 @@ import { CommunalService } from '../../communal.service';
             <p>Tax: 
               <span 
               class='taxLink'>
-                Tax &#8381;
+                {{ thisMonth.electricity_night }} Tax &#8381;
               </span>
             </p>
             <!-- tax input group -->
@@ -209,23 +206,22 @@ import { CommunalService } from '../../communal.service';
               <div class='input-group-prepend'>
                 <span class='input-group-text communal-label'>tax</span>
               </div>
-              <input type='number' class='form-control'>
+              <input [(ngModel)]='thisMonth.taxes.electricity_night_tax' type='number' class='form-control'>
             </div> <!-- end of  tax input group  -->
   
-            <!-- last month input group -->
-            <div class="input-group  mb-3">
-              <div class="input-group-prepend">
-                <span class="input-group-text communal-label">last</span>
-              </div>
-              <input type='number' class="form-control">
-            </div> <!-- end of last month input group -->
+            <!-- last mounth -->
+            <p>last: 
+            <span 
+            class='taxLink'>
+              {{ lastMonth.electricity_night }}
+            </span>
             
             <!-- this month input group -->
             <div class='input-group  mb-3'>
               <div class='input-group-prepend'>
                 <span class='input-group-text communal-label'>now</span>
               </div>
-              <input type='number' class='form-control'>
+              <input [(ngModel)]='thisMonth.electricity_night' type='number' class='form-control'>
             </div> <!-- end of this month input group -->
   
             <hr>
@@ -254,16 +250,37 @@ import { CommunalService } from '../../communal.service';
       <h3 class="text-center"> Total: {{ countTotal() }} &#8381; </h3>
     </div>
 
+    <button (click)='count()'>Count</button>
+
   `
 })
 export class CommunalComponent implements OnInit{
   total: number = 0;
+  lastMonth;
+  thisMonth = {
+    "date": {
+      "year": 0,
+      "month": 0
+    },
+    "cold_water": 0,
+    "hot_water": 0,
+    "electricity_day": 0,
+    "electricity_night": 0,
+    "taxes": {
+      "cold_water_tax": 0,
+      "hot_water_tax": 0,
+      "electricity_day_tax": 0,
+      "electricity_night_tax": 0
+    }
+  };
   communals: Communal[];
 
   constructor(private communalService: CommunalService){}
 
   ngOnInit(){
     this.communals = this.communalService.getCommunals();
+    this.lastMonth = this.communalService.getLast();
+    console.log(this.lastMonth);
   }
   
   countTotal(): number {
@@ -273,4 +290,8 @@ export class CommunalComponent implements OnInit{
     }
     return _.round(this.total, 2);
   }; 
+
+  count(){
+    console.log('count');
+  }
 }
