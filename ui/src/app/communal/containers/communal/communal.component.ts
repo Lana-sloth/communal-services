@@ -16,7 +16,7 @@ import { CommunalService } from '../../communal.service';
         *ngFor='let communal of communals'
         [card]='communal'>
       </card-component> -->
-      
+ 
       <!-- ///////////////////// -->
       <!--      COLD WATER       -->
       <!-- ///////////////////// -->
@@ -257,22 +257,7 @@ import { CommunalService } from '../../communal.service';
 export class CommunalComponent implements OnInit{
   total: number = 0;
   lastMonth;
-  thisMonth = {
-    "date": {
-      "year": 0,
-      "month": 0
-    },
-    "cold_water": 0,
-    "hot_water": 0,
-    "electricity_day": 0,
-    "electricity_night": 0,
-    "taxes": {
-      "cold_water_tax": 0,
-      "hot_water_tax": 0,
-      "electricity_day_tax": 0,
-      "electricity_night_tax": 0
-    }
-  };
+  thisMonth;
   communals: Communal[];
 
   constructor(private communalService: CommunalService){}
@@ -280,7 +265,22 @@ export class CommunalComponent implements OnInit{
   ngOnInit(){
     this.communals = this.communalService.getCommunals();
     this.lastMonth = this.communalService.getLast();
-    console.log(this.lastMonth);
+    this.thisMonth = {
+      "date": {
+        "year": 0,
+        "month": 0
+      },
+      "cold_water": 0,
+      "hot_water": 0,
+      "electricity_day": 0,
+      "electricity_night": 0,
+      "taxes": {
+        "cold_water_tax": this.lastMonth.taxes.cold_water_tax,
+        "hot_water_tax": this.lastMonth.taxes.hot_water_tax,
+        "electricity_day_tax": this.lastMonth.taxes.electricity_day_tax,
+        "electricity_night_tax": this.lastMonth.taxes.electricity_night_tax
+      }
+    };
   }
   
   countTotal(): number {
