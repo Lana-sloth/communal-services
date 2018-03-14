@@ -64,11 +64,18 @@ import { CommunalService } from '../../communal.service';
             <table>
                 <tr>
                   <th>Delta:</th>
-                  <td>{{ countDifference(lastMonth.cold_water, thisMonth.cold_water) }}</td>
+                  <td>{{ spentCount(lastMonth.cold_water, 
+                                    thisMonth.cold_water)() 
+                      }}
+                  </td>
                 </tr>
                 <tr>
                   <th>Spent:</th>
-                  <td>... &#8381;</td>
+                  <td>{{ spentCount(lastMonth.cold_water, 
+                                    thisMonth.cold_water)
+                                   (thisMonth.taxes.cold_water_tax) 
+                      }} &#8381;
+                  </td>
                 </tr>
             </table>
   
@@ -120,11 +127,18 @@ import { CommunalService } from '../../communal.service';
             <table>
               <tr>
                 <th>Delta:</th>
-                <td>{{ countDifference(lastMonth.hot_water, thisMonth.hot_water) }}</td>
+                <td>{{ spentCount(lastMonth.hot_water, 
+                                  thisMonth.hot_water)() 
+                    }}
+                </td>
               </tr>
               <tr>
                 <th>Spent:</th>
-                <td>... &#8381;</td>
+                <td>{{ spentCount(lastMonth.hot_water, 
+                                  thisMonth.hot_water)
+                                 (thisMonth.taxes.hot_water_tax) 
+                    }} &#8381;
+                </td>
               </tr>
             </table>
   
@@ -176,11 +190,18 @@ import { CommunalService } from '../../communal.service';
             <table>
               <tr>
                 <th>Delta:</th>
-                <td>{{ countDifference(lastMonth.electricity_day, thisMonth.electricity_day) }}</td>
+                <td>{{ spentCount(lastMonth.electricity_day, 
+                                  thisMonth.electricity_day)() 
+                    }}
+                </td>
               </tr>
               <tr>
                 <th>Spent:</th>
-                <td>... &#8381;</td>
+                <td>{{ spentCount(lastMonth.electricity_day, 
+                                  thisMonth.electricity_day)
+                                 (thisMonth.taxes.electricity_day_tax) 
+                    }} &#8381;
+                </td>
               </tr>
             </table>
   
@@ -232,11 +253,18 @@ import { CommunalService } from '../../communal.service';
             <table>
               <tr>
                 <th>Delta:</th>
-                <td>{{ spentCount(lastMonth.electricity_night, thisMonth.electricity_night)() }}</td>
+                <td>{{ spentCount(lastMonth.electricity_night, 
+                                  thisMonth.electricity_night)() 
+                    }}
+                </td>
               </tr>
               <tr>
                 <th>Spent:</th>
-                <td>{{ spentCount(lastMonth.electricity_night, thisMonth.electricity_night)(thisMonth.taxes.electricity_night_tax) }}  &#8381;</td>
+                <td>{{ spentCount(lastMonth.electricity_night, 
+                                  thisMonth.electricity_night)
+                                 (thisMonth.taxes.electricity_night_tax) 
+                    }} &#8381;
+                </td>
               </tr>
             </table>
   
@@ -297,30 +325,18 @@ export class CommunalComponent implements OnInit{
     return _.round(this.total, 2);
   }; 
 
-  countSpent(diff, tax){
-    if (diff == '-') return
-    let t = this.thisMonth.taxes.tax;
-    let spent = (Number(diff * t));
-    return _.round(spent, 2);
-  }
-
-  countDifference(last, current): number | string {
-    let diff = current - last;
-    if(diff <= 0) return '-';
-    else return diff;
-  }
-
   spentCount = function (last, current){
     let diff = current - last;
     return function (tax){
-      if (diff <= 0) return '-';
+      if (diff <= 0) return 0;
       if (!tax && diff) return diff;
-      
-      return diff * tax;
+      let spent = diff * tax;
+      return _.round(spent, 2);
     }
   }
 
   count(){
     console.log('count');
   }
+
 }
