@@ -16,7 +16,11 @@ import { CommunalService } from '../../communal.service';
         *ngFor='let communal of communals'
         [card]='communal'>
       </card-component> -->
- 
+     
+      <div class='col-md-12'>
+        <p class="text-center"> {{ this.currentDate | date:'longDate' }} </p>
+      </div>
+
       <!-- ///////////////////// -->
       <!--      COLD WATER       -->
       <!-- ///////////////////// -->
@@ -25,7 +29,7 @@ import { CommunalService } from '../../communal.service';
           <div class='card-body'>
   
             <!-- title -->
-            <h5 class='card-title'>Water</h5>
+            <h5 class='card-title'>Cold Water</h5>
             <!-- tax link -->
             <p>Tax: 
             <span 
@@ -60,7 +64,7 @@ import { CommunalService } from '../../communal.service';
             <table>
                 <tr>
                   <th>Delta:</th>
-                  <td>...</td>
+                  <td>{{ countDifference(lastMonth.cold_water, thisMonth.cold_water) }}</td>
                 </tr>
                 <tr>
                   <th>Spent:</th>
@@ -81,7 +85,7 @@ import { CommunalService } from '../../communal.service';
           <div class='card-body'>
   
             <!-- title -->
-            <h5 class='card-title'>Water</h5>
+            <h5 class='card-title'>Hot Water</h5>
             <!-- tax link -->
             <p>Tax: 
               <span 
@@ -116,7 +120,7 @@ import { CommunalService } from '../../communal.service';
             <table>
               <tr>
                 <th>Delta:</th>
-                <td>...</td>
+                <td>{{ countDifference(lastMonth.hot_water, thisMonth.hot_water) }}</td>
               </tr>
               <tr>
                 <th>Spent:</th>
@@ -137,12 +141,12 @@ import { CommunalService } from '../../communal.service';
           <div class='card-body'>
   
             <!-- title -->
-            <h5 class='card-title'>Water</h5>
+            <h5 class='card-title'>Day Electricity</h5>
             <!-- tax link -->
             <p>Tax: 
               <span 
               class='taxLink'>
-                {{ thisMonth.electricity_day }} Tax &#8381;
+                {{ thisMonth.taxes.electricity_day_tax }} Tax &#8381;
               </span>
             </p>
             <!-- tax input group -->
@@ -172,7 +176,7 @@ import { CommunalService } from '../../communal.service';
             <table>
               <tr>
                 <th>Delta:</th>
-                <td>...</td>
+                <td>{{ countDifference(lastMonth.electricity_day, thisMonth.electricity_day) }}</td>
               </tr>
               <tr>
                 <th>Spent:</th>
@@ -193,12 +197,12 @@ import { CommunalService } from '../../communal.service';
           <div class='card-body'>
   
             <!-- title -->
-            <h5 class='card-title'>Water</h5>
+            <h5 class='card-title'>Night Electricity</h5>
             <!-- tax link -->
             <p>Tax: 
               <span 
               class='taxLink'>
-                {{ thisMonth.electricity_night }} Tax &#8381;
+                {{ thisMonth.taxes.electricity_night_tax }} Tax &#8381;
               </span>
             </p>
             <!-- tax input group -->
@@ -228,11 +232,11 @@ import { CommunalService } from '../../communal.service';
             <table>
               <tr>
                 <th>Delta:</th>
-                <td>...</td>
+                <td>{{ spentCount(lastMonth.electricity_night, thisMonth.electricity_night)() }}</td>
               </tr>
               <tr>
                 <th>Spent:</th>
-                <td>... &#8381;</td>
+                <td>{{ spentCount(lastMonth.electricity_night, thisMonth.electricity_night)(thisMonth.taxes.electricity_night_tax) }}  &#8381;</td>
               </tr>
             </table>
   
@@ -256,6 +260,7 @@ import { CommunalService } from '../../communal.service';
 })
 export class CommunalComponent implements OnInit{
   total: number = 0;
+  currentDate;
   lastMonth;
   thisMonth;
   communals: Communal[];
@@ -264,11 +269,12 @@ export class CommunalComponent implements OnInit{
 
   ngOnInit(){
     this.communals = this.communalService.getCommunals();
+    this.currentDate = new Date();
     this.lastMonth = this.communalService.getLast();
     this.thisMonth = {
       "date": {
-        "year": 0,
-        "month": 0
+        "year": this.currentDate.getFullYear(),
+        "month": this.currentDate.getMonth() + 1
       },
       "cold_water": 0,
       "hot_water": 0,
@@ -290,6 +296,29 @@ export class CommunalComponent implements OnInit{
     }
     return _.round(this.total, 2);
   }; 
+
+  countSpent(diff, tax){
+    if (diff == '-') return
+    let t = this.thisMonth.taxes.tax;
+    let spent = (Number(diff * t));
+    return _.round(spent, 2);
+  }
+
+  countDifference(last, current): number | string {
+    let diff = current - last;
+    if(diff <= 0) return '-';
+    else return diff;
+  }
+
+  spentCount = function (last, current){
+    let diff = current - last;
+    return function (tax){
+      if (diff <= 0) return '-';
+      if (!tax && diff) return diff;
+      
+      return diff * tax;
+    }
+  }
 
   count(){
     console.log('count');
