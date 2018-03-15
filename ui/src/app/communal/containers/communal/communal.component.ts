@@ -329,7 +329,7 @@ export class CommunalComponent implements OnInit{
     let diff = current - last;
     return function (tax){
       if (diff <= 0) return 0;
-      if (!tax && diff) return diff;
+      if (!tax && diff) return _.round(diff, 2);
       let spent = diff * tax;
       return _.round(spent, 2);
     }
