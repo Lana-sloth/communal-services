@@ -64,12 +64,11 @@ import { CommunalService } from '../../communal.service';
             <table>
                 <tr>
                   <th>Delta:</th>
-                  <td>
-                  </td>
+                  <td>{{ totals.cold_water.diff }}</td>
                 </tr>
                 <tr>
                   <th>Spent:</th>
-                  <td>{{ totals.cold_water }} &#8381;</td>
+                  <td>{{ totals.cold_water.cost }} &#8381;</td>
                 </tr>
             </table>
   
@@ -121,12 +120,11 @@ import { CommunalService } from '../../communal.service';
             <table>
               <tr>
                 <th>Delta:</th>
-                <td>
-                </td>
+                <td>{{ totals.hot_water.diff }}</td>
               </tr>
               <tr>
                 <th>Spent:</th>
-                <td>{{ totals.hot_water }} &#8381;</td>
+                <td>{{ totals.hot_water.cost }} &#8381;</td>
               </tr>
             </table>
   
@@ -178,12 +176,11 @@ import { CommunalService } from '../../communal.service';
             <table>
               <tr>
                 <th>Delta:</th>
-                <td>
-                </td>
+                <td>{{ totals.electricity_day.diff }}</td>
               </tr>
               <tr>
                 <th>Spent:</th>
-                <td>{{ totals.electricity_day }} &#8381;</td>
+                <td>{{ totals.electricity_day.cost }} &#8381;</td>
               </tr>
             </table>
   
@@ -235,11 +232,11 @@ import { CommunalService } from '../../communal.service';
             <table>
               <tr>
                 <th>Delta:</th>
-                <td>  </td>
+                <td> {{ totals.electricity_night.diff }} </td>
               </tr>
               <tr>
                 <th>Spent:</th>
-                <td> {{ totals.electricity_night }} &#8381; </td>
+                <td> {{ totals.electricity_night.cost }} &#8381; </td>
               </tr>
             </table>
   
@@ -292,16 +289,35 @@ export class CommunalComponent implements OnInit{
       }
     }
     this.totals = {
-      "cold_water": 0,
-      "hot_water": 0,
-      "electricity_day": 0,
-      "electricity_night": 0
+      "cold_water": {
+        "diff": 0,
+        "cost": 0
+      },
+      "hot_water": {
+        "diff": 0,
+        "cost": 0
+      },
+      "electricity_day": {
+        "diff": 0,
+        "cost": 0
+      },
+      "electricity_night": {
+        "diff": 0,
+        "cost": 0
+      }
     };
     this.total = 0
   }
 
-  spentCount(last, current, tax): number{
+  diffCount(last, current): number{
     let diff = current - last;
+    if (diff <= 0) return 0;
+    else {
+      return _.round(diff, 2);
+    }
+  }
+
+  spentCount(diff, tax): number{
     let spent = diff * tax;
     if (spent <= 0) return 0;
     else {
@@ -315,12 +331,21 @@ export class CommunalComponent implements OnInit{
     let last = this.lastMonth;
     let cur = this.thisMonth;
 
-    t.cold_water = this.spentCount(last.cold_water, cur.cold_water, x.cold_water_tax);
-    t.hot_water = this.spentCount(last.hot_water, cur.hot_water, x.hot_water_tax);
-    t.electricity_day = this.spentCount(last.electricity_day, cur.electricity_day, x.electricity_day_tax);
-    t.electricity_night = this.spentCount(last.electricity_night, cur.electricity_night, x.electricity_night_tax);
+    // gets differences from totals for each card
+    t.cold_water.diff = this.diffCount(last.cold_water, cur.cold_water);
+    t.hot_water.diff = this.diffCount(last.hot_water, cur.hot_water);
+    t.electricity_day.diff = this.diffCount(last.electricity_day, cur.electricity_day);
+    t.electricity_night.diff = this.diffCount(last.electricity_night, cur.electricity_night);
     
-    this.total = t.cold_water + t.hot_water + t.electricity_day + t.electricity_night;
+    // gets results from totals for each card (in rubls)
+    t.cold_water.cost = this.spentCount(t.cold_water.diff, x.cold_water_tax);
+    t.hot_water.cost = this.spentCount(t.hot_water.diff, x.hot_water_tax);
+    t.electricity_day.cost = this.spentCount(t.electricity_day.diff, x.electricity_day_tax);
+    t.electricity_night.cost = this.spentCount(t.electricity_night.diff, x.electricity_night_tax);
+    
+    // counts total result
+    let spentTotal = t.cold_water.cost + t.hot_water.cost + t.electricity_day.cost + t.electricity_night.cost;
+    this.total = _.round(spentTotal, 2);
   }
 
 }
