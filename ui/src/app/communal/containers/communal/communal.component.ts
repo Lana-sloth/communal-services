@@ -64,18 +64,12 @@ import { CommunalService } from '../../communal.service';
             <table>
                 <tr>
                   <th>Delta:</th>
-                  <td>{{ spentCount(lastMonth.cold_water, 
-                                    thisMonth.cold_water)() 
-                      }}
+                  <td>
                   </td>
                 </tr>
                 <tr>
                   <th>Spent:</th>
-                  <td>{{ spentCount(lastMonth.cold_water, 
-                                    thisMonth.cold_water)
-                                   (thisMonth.taxes.cold_water_tax) 
-                      }} &#8381;
-                  </td>
+                  <td>{{ totals.cold_water }} &#8381;</td>
                 </tr>
             </table>
   
@@ -127,18 +121,12 @@ import { CommunalService } from '../../communal.service';
             <table>
               <tr>
                 <th>Delta:</th>
-                <td>{{ spentCount(lastMonth.hot_water, 
-                                  thisMonth.hot_water)() 
-                    }}
+                <td>
                 </td>
               </tr>
               <tr>
                 <th>Spent:</th>
-                <td>{{ spentCount(lastMonth.hot_water, 
-                                  thisMonth.hot_water)
-                                 (thisMonth.taxes.hot_water_tax) 
-                    }} &#8381;
-                </td>
+                <td>{{ totals.hot_water }} &#8381;</td>
               </tr>
             </table>
   
@@ -190,18 +178,12 @@ import { CommunalService } from '../../communal.service';
             <table>
               <tr>
                 <th>Delta:</th>
-                <td>{{ spentCount(lastMonth.electricity_day, 
-                                  thisMonth.electricity_day)() 
-                    }}
+                <td>
                 </td>
               </tr>
               <tr>
                 <th>Spent:</th>
-                <td>{{ spentCount(lastMonth.electricity_day, 
-                                  thisMonth.electricity_day)
-                                 (thisMonth.taxes.electricity_day_tax) 
-                    }} &#8381;
-                </td>
+                <td>{{ totals.electricity_day }} &#8381;</td>
               </tr>
             </table>
   
@@ -253,18 +235,11 @@ import { CommunalService } from '../../communal.service';
             <table>
               <tr>
                 <th>Delta:</th>
-                <td>{{ spentCount(lastMonth.electricity_night, 
-                                  thisMonth.electricity_night)() 
-                    }}
-                </td>
+                <td>  </td>
               </tr>
               <tr>
                 <th>Spent:</th>
-                <td>{{ spentCount(lastMonth.electricity_night, 
-                                  thisMonth.electricity_night)
-                                 (thisMonth.taxes.electricity_night_tax) 
-                    }} &#8381;
-                </td>
+                <td> {{ totals.electricity_night }} &#8381; </td>
               </tr>
             </table>
   
@@ -279,7 +254,7 @@ import { CommunalService } from '../../communal.service';
     <!-- ///////////////////// -->
     <br>
     <div class="alert alert-primary">
-      <h3 class="text-center"> Total: {{ countTotal() }} &#8381; </h3>
+      <h3 class="text-center"> Spent: {{ total }} &#8381; </h3>
     </div>
 
     <button (click)='count()'>Count</button>
@@ -287,10 +262,11 @@ import { CommunalService } from '../../communal.service';
   `
 })
 export class CommunalComponent implements OnInit{
-  total: number = 0;
+  total;
+  totals;
   currentDate;
   lastMonth;
-  thisMonth;
+  thisMonth: Communal;
   communals: Communal[];
 
   constructor(private communalService: CommunalService){}
@@ -314,29 +290,37 @@ export class CommunalComponent implements OnInit{
         "electricity_day_tax": this.lastMonth.taxes.electricity_day_tax,
         "electricity_night_tax": this.lastMonth.taxes.electricity_night_tax
       }
-    };
-  }
-  
-  countTotal(): number {
-    this.total = 0;
-    for (let i = 0; i < this.communals.length; i++){
-      this.total += Number(this.communals[i].spent);
     }
-    return _.round(this.total, 2);
-  }; 
+    this.totals = {
+      "cold_water": 0,
+      "hot_water": 0,
+      "electricity_day": 0,
+      "electricity_night": 0
+    };
+    this.total = 0
+  }
 
-  spentCount = function (last, current){
+  spentCount(last, current, tax): number{
     let diff = current - last;
-    return function (tax){
-      if (diff <= 0) return 0;
-      if (!tax && diff) return _.round(diff, 2);
-      let spent = diff * tax;
+    let spent = diff * tax;
+    if (spent <= 0) return 0;
+    else {
       return _.round(spent, 2);
     }
   }
 
   count(){
-    console.log('count');
+    let t = this.totals;
+    let x = this.thisMonth.taxes;
+    let last = this.lastMonth;
+    let cur = this.thisMonth;
+
+    t.cold_water = this.spentCount(last.cold_water, cur.cold_water, x.cold_water_tax);
+    t.hot_water = this.spentCount(last.hot_water, cur.hot_water, x.hot_water_tax);
+    t.electricity_day = this.spentCount(last.electricity_day, cur.electricity_day, x.electricity_day_tax);
+    t.electricity_night = this.spentCount(last.electricity_night, cur.electricity_night, x.electricity_night_tax);
+    
+    this.total = t.cold_water + t.hot_water + t.electricity_day + t.electricity_night;
   }
 
 }
