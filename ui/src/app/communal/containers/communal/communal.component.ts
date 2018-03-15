@@ -31,18 +31,22 @@ import { CommunalService } from '../../communal.service';
             <!-- title -->
             <h5 class='card-title'>Cold Water</h5>
             <!-- tax link -->
-            <p>Tax: 
+            <p *ngIf='!totals.cold_water.isEditing'>Tax: 
             <span 
-            class='taxLink'>
-              {{ thisMonth.taxes.cold_water_tax }} Tax &#8381;
+              (click) = 'toggleEdit("cold_water")'
+              class='taxLink'>
+              {{ thisMonth.taxes.cold_water_tax }} &#8381;
             </span>
             </p>
             <!-- tax input group -->
-            <div class='input-group  mb-3'>
+            <div *ngIf='totals.cold_water.isEditing' class='input-group  mb-3'>
               <div class='input-group-prepend'>
                 <span class='input-group-text communal-label'>tax</span>
               </div>
-              <input [(ngModel)]='thisMonth.taxes.cold_water_tax' type='number' class='form-control'>
+              <input 
+                (blur) = 'toggleEdit("cold_water")'
+                (pointercancel) = 'toggleEdit("cold_water")'
+                [(ngModel)]='thisMonth.taxes.cold_water_tax' type='number' class='form-control'>
             </div> <!-- end of  tax input group  -->
             
             <!-- last mounth -->
@@ -87,18 +91,22 @@ import { CommunalService } from '../../communal.service';
             <!-- title -->
             <h5 class='card-title'>Hot Water</h5>
             <!-- tax link -->
-            <p>Tax: 
+            <p *ngIf='!totals.hot_water.isEditing'>Tax: 
               <span 
-              class='taxLink'>
-                {{ thisMonth.taxes.hot_water_tax }} Tax &#8381;
+                (click) = 'toggleEdit("hot_water")'
+                class='taxLink'>
+                {{ thisMonth.taxes.hot_water_tax }} &#8381;
               </span>
             </p>
             <!-- tax input group -->
-            <div class='input-group  mb-3'>
+            <div *ngIf='totals.hot_water.isEditing' class='input-group  mb-3'>
               <div class='input-group-prepend'>
                 <span class='input-group-text communal-label'>tax</span>
               </div>
-              <input [(ngModel)]='thisMonth.taxes.hot_water_tax' type='number' class='form-control'>
+              <input 
+                (blur) = 'toggleEdit("hot_water")'
+                (pointercancel) = 'toggleEdit("hot_water")'
+                [(ngModel)]='thisMonth.taxes.hot_water_tax' type='number' class='form-control'>
             </div> <!-- end of  tax input group  -->
   
             <!-- last mounth -->
@@ -143,18 +151,22 @@ import { CommunalService } from '../../communal.service';
             <!-- title -->
             <h5 class='card-title'>Day Electricity</h5>
             <!-- tax link -->
-            <p>Tax: 
+            <p *ngIf='!totals.electricity_day.isEditing'>Tax: 
               <span 
-              class='taxLink'>
-                {{ thisMonth.taxes.electricity_day_tax }} Tax &#8381;
+                (click) = 'toggleEdit("electricity_day")'
+                class='taxLink'>
+                {{ thisMonth.taxes.electricity_day_tax }} &#8381;
               </span>
             </p>
             <!-- tax input group -->
-            <div class='input-group  mb-3'>
+            <div *ngIf='totals.electricity_day.isEditing' class='input-group  mb-3'>
               <div class='input-group-prepend'>
                 <span class='input-group-text communal-label'>tax</span>
               </div>
-              <input [(ngModel)]='thisMonth.taxes.electricity_day_tax' type='number' class='form-control'>
+              <input 
+                (blur) = 'toggleEdit("electricity_day")'
+                (pointercancel) = 'toggleEdit("electricity_day")'
+                [(ngModel)]='thisMonth.taxes.electricity_day_tax' type='number' class='form-control'>
             </div> <!-- end of  tax input group  -->
   
             <!-- last mounth -->
@@ -199,18 +211,22 @@ import { CommunalService } from '../../communal.service';
             <!-- title -->
             <h5 class='card-title'>Night Electricity</h5>
             <!-- tax link -->
-            <p>Tax: 
+            <p *ngIf='!totals.electricity_night.isEditing'>Tax: 
               <span 
-              class='taxLink'>
-                {{ thisMonth.taxes.electricity_night_tax }} Tax &#8381;
+                (click) = 'toggleEdit("electricity_night")'
+                class='taxLink'>
+                {{ thisMonth.taxes.electricity_night_tax }} &#8381;
               </span>
             </p>
             <!-- tax input group -->
-            <div class='input-group  mb-3'>
+            <div *ngIf='totals.electricity_night.isEditing' class='input-group  mb-3'>
               <div class='input-group-prepend'>
                 <span class='input-group-text communal-label'>tax</span>
               </div>
-              <input [(ngModel)]='thisMonth.taxes.electricity_night_tax' type='number' class='form-control'>
+              <input 
+                (blur) = 'toggleEdit("electricity_night")'
+                (pointercancel) = 'toggleEdit("electricity_night")'
+                [(ngModel)]='thisMonth.taxes.electricity_night_tax' type='number' class='form-control'>
             </div> <!-- end of  tax input group  -->
   
             <!-- last mounth -->
@@ -290,24 +306,39 @@ export class CommunalComponent implements OnInit{
     }
     this.totals = {
       "cold_water": {
+        "isEditing": false,
         "diff": 0,
         "cost": 0
       },
       "hot_water": {
+        "isEditing": false,
         "diff": 0,
         "cost": 0
       },
       "electricity_day": {
+        "isEditing": false,
         "diff": 0,
         "cost": 0
       },
       "electricity_night": {
+        "isEditing": false,
         "diff": 0,
         "cost": 0
       }
     };
     this.total = 0
   }
+  
+  toggleEdit(card){
+    if (card == 'cold_water') 
+      this.totals.cold_water.isEditing = !this.totals.cold_water.isEditing;
+    else if (card == 'hot_water') 
+      this.totals.hot_water.isEditing = !this.totals.hot_water.isEditing;
+    else if (card == 'electricity_day') 
+      this.totals.electricity_day.isEditing = !this.totals.electricity_day.isEditing;
+    else if (card == 'electricity_night') 
+      this.totals.electricity_night.isEditing = !this.totals.electricity_night.isEditing;
+  }  
 
   diffCount(last, current): number{
     let diff = current - last;
