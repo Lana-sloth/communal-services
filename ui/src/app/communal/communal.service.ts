@@ -1,5 +1,12 @@
 import { Injectable } from '@angular/core';
-import { Http } from '@angular/http';
+import { Http, Response } from '@angular/http';
+
+import { Communal } from '../communal/containers/models/communal.models';
+
+import { Observable } from 'rxjs/Observable';
+import "rxjs/add/operator/map";
+
+const COMMUNAL_API: string = 'http://127.0.0.1:5000/cs_bills/';
 
 @Injectable()
 export class CommunalService {
@@ -27,7 +34,9 @@ export class CommunalService {
     return this.allItems[last];
   }
 
-  getCommunals(){
-    return this.allItems;
+  getCommunals(): Observable<Communal[]>{
+    return this.http
+      .get(COMMUNAL_API)
+      .map((response: Response) => response.json());
   }
 }

@@ -285,7 +285,13 @@ export class CommunalComponent implements OnInit{
   constructor(private communalService: CommunalService){}
 
   ngOnInit(){
-    this.communals = this.communalService.getCommunals();
+    this.communalService
+      .getCommunals()
+      .subscribe((data: Communal[]) => {
+        console.log('Data ', data);
+        this.communals = data;
+      });
+
     this.currentDate = new Date();
     this.lastMonth = this.communalService.getLast();
     this.thisMonth = {

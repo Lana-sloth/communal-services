@@ -10,6 +10,7 @@ MONGO_DBNAME = os.environ.get('MONGO_DBNAME', secret.MONGO_DBNAME)
 RESOURCE_METHODS = ['GET', 'POST']
 ITEM_METHODS = ['GET', 'PUT', 'DELETE']
 IF_MATCH = False
+X_DOMAINS = '*'
 
 cs_bills = {
     'item_title': 'cs_bill',
