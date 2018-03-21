@@ -12,14 +12,14 @@ import { isArray } from 'util';
   ],
   template: `
     <br>
-    <div *ngIf='this.thisMonthDefined' class='row'>
+    <div *ngIf='thisMonth' class='row'>
       <!-- <card-component class='col-md-3'
         *ngFor='let communal of communals'
         [card]='communal'>
       </card-component> -->
      
       <div class='col-md-12'>
-        <p class="text-center"> {{ this.currentDate | date:'longDate' }} </p>
+        <p class="text-center"> {{ this.monthDate }}, {{ this.yearDate }} </p>
       </div>
 
       <!-- ///////////////////// -->
@@ -50,12 +50,24 @@ import { isArray } from 'util';
                 [(ngModel)]='thisMonth?.taxes.cold_water_tax' type='number' class='form-control'>
             </div> <!-- end of  tax input group  -->
             
-            <!-- last mounth -->
-            <p>last: 
-            <span 
-            class='taxLink'>
-              {{ lastMonth?.cold_water }}
-            </span>
+            <!-- last mounth link -->
+            <p *ngIf='!totals.cold_water.isEditing'>last: 
+              <span 
+              (click) = 'toggleEdit("cold_water")'
+              class='taxLink'>
+                {{ lastMonth?.cold_water }}
+              </span>
+            </p>
+            <!-- last mounth input group -->
+            <div *ngIf='totals.cold_water.isEditing' class='input-group  mb-3'>
+              <div class='input-group-prepend'>
+                <span class='input-group-text communal-label'>last</span>
+              </div>
+              <input 
+                (blur) = 'toggleEdit("cold_water")'
+                (pointercancel) = 'toggleEdit("cold_water")'
+                [(ngModel)]='lastMonth.cold_water' type='number' class='form-control'>
+            </div> <!-- end of  last mounth input group  -->
             
             <!-- this month input group -->
             <div class='input-group  mb-3'>
@@ -114,7 +126,7 @@ import { isArray } from 'util';
             <p>last: 
             <span 
             class='taxLink'>
-              {{ lastMonth?.hot_water }}
+              {{ lastMonth?.hot_water }}  
             </span>
 
             <!-- this month input group -->
@@ -268,17 +280,19 @@ import { isArray } from 'util';
     <!-- ///////////////////// -->
     <br>
     <div class="alert alert-primary">
-      <h3 class="text-center"> Spent: {{ total }} &#8381; </h3>
+      <h3 class="text-center"> Total: {{ total }} &#8381; </h3>
     </div>
 
+    <pre>{{ thisMonth | json }}</pre>
     <button (click)='calculate()'>Calculate</button>
-
+  
   `
 })
 export class CommunalComponent implements OnInit{
   total;
   totals;
-  currentDate;
+  monthDate;
+  yearDate;
   communals: any;
   lastMonth;
   thisMonth: Communal;
@@ -287,30 +301,46 @@ export class CommunalComponent implements OnInit{
   constructor(private communalService: CommunalService){}
 
   ngOnInit(){
+    this.monthDate = this.communalService.currentMonth;
+    this.yearDate = this.communalService.currentYear;
+    this.thisMonth = {
+      "date": {
+        "year": this.monthDate,
+        "month": this.yearDate
+      },
+      "cold_water": 0,
+      "hot_water": 0,
+      "electricity_day": 0,
+      "electricity_night": 0,
+      "taxes": {
+        "cold_water_tax": 0,
+        "hot_water_tax": 0,
+        "electricity_day_tax": 0,
+        "electricity_night_tax": 0
+      }
+    }
+
     this.communalService
       .getCommunals()
-      .subscribe((data: Communal[]) => {
-        // gets items from server
-        this.communals = Object.values(data)[0];
-        
-        console.log('OnInit: ui', this.communals);
-        console.log('OnInit: api', Object.values(data)[0]);
-
-        // if list is empty, uses mock
-        if(!this.communals.length) { 
-          console.log('OnInit: list is empty! Pushing mock:', this.communalService.lastItem.date);
-          this.communals.push(this.communalService.lastItem); 
-          console.log('OnInit:', this.communals);
-
-          // gets last month from server
-          this.lastMonth = this.getLastItem();
-          this.thisMonth = this.getThisMonth();
-          this.thisMonthDefined = true;
+      .subscribe((data: any) => {
+        if(data._items[0]) {
+          // gets items from server
+          this.thisMonth = data._items[0];
         }
+        console.log('OnInit: data', data);
+        console.log('OnInit: this month', this.thisMonth); 
       });
 
-    this.currentDate = new Date();
-
+    this.communalService
+    .getLastMonth()
+    .subscribe((data: any) => {
+      // gets items from server
+      this.lastMonth = data._items[0];
+      console.log('getLastMonth: last month', this.lastMonth);
+      if (!this.lastMonth) this.lastMonth = this.communalService.monthMock;
+      console.log('getLastMonth: last month', this.lastMonth);
+    });
+    
     this.totals = {
       "cold_water": {
         "isEditing": false,
@@ -346,30 +376,6 @@ export class CommunalComponent implements OnInit{
     let last = this.communals.length - 1;
     console.log('getLastItem: found and is', this.communals[last].date)
     return this.communals[last];
-  }
-
-  getThisMonth(){
-    if(!this.lastMonth) {
-      console.log('getThisMonth: failed cause last month is', this.lastMonth);
-      return
-    }
-    console.log('getThisMonth: last month is', this.lastMonth.date);
-    return {
-      "date": {
-        "year": this.currentDate.getFullYear(),
-        "month": this.currentDate.getMonth() + 1
-      },
-      "cold_water": 0,
-      "hot_water": 0,
-      "electricity_day": 0,
-      "electricity_night": 0,
-      "taxes": {
-        "cold_water_tax": this.lastMonth.taxes.cold_water_tax,
-        "hot_water_tax": this.lastMonth.taxes.hot_water_tax,
-        "electricity_day_tax": this.lastMonth.taxes.electricity_day_tax,
-        "electricity_night_tax": this.lastMonth.taxes.electricity_night_tax
-      } 
-    }
   }
   
   toggleEdit(card){
@@ -420,23 +426,6 @@ export class CommunalComponent implements OnInit{
     // counts total result
     let spentTotal = t.cold_water.cost + t.hot_water.cost + t.electricity_day.cost + t.electricity_night.cost;
     this.total = _.round(spentTotal, 2);
-
-    ///////////////////////////////
-    // sends thisMonth to server //
-    ///////////////////////////////
-
-    let lastM = this.getLastItem();
-    // checks date of last month and pops if it's the same date as in current month
-    if (this.thisMonth.date == lastM.date) {
-      console.log('calculate: the same date in', this.communals);
-      //this.communals.pop();
-      //console.log('calculate: pop last', this.communals);
-      console.log('calculate: last month is', this.lastMonth);
-      return
-    }
-    // pushes to the list
-      this.communals.push(this.thisMonth);
-      console.log('calculate: add new date', this.communals);
   }
 
 }

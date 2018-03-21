@@ -6,32 +6,40 @@ import { Communal } from '../communal/containers/models/communal.models';
 import { Observable } from 'rxjs/Observable';
 import "rxjs/add/operator/map";
 
-const COMMUNAL_API: string = 'http://127.0.0.1:5000/cs_bills/';
+const COMMUNAL_API: string = 'http://127.0.0.1:5000/cs_bills';
 
 @Injectable()
 export class CommunalService {
   constructor(private http: Http){}
-  
-  lastItem = {
+
+  currentMonth = new Date().getMonth()+1;
+  currentYear = new Date().getFullYear();
+  monthMock = {
     "date": {
-      "year": 2018,
-      "month": 2
+      "year": 0,
+      "month": 0
     },
-    "cold_water": 33.062,
-    "hot_water": 27.442,
-    "electricity_day": 13023,
-    "electricity_night": 4606,
+    "cold_water": 0,
+    "hot_water": 0,
+    "electricity_day": 0,
+    "electricity_night": 0,
     "taxes": {
-      "cold_water_tax": 35.40,
-      "hot_water_tax": 180.55,
-      "electricity_day_tax": 6.19,
-      "electricity_night_tax": 1.79
+      "cold_water_tax": 0,
+      "hot_water_tax": 0,
+      "electricity_day_tax": 0,
+      "electricity_night_tax": 0
     }
   }
   
   getCommunals(): Observable<Communal[]>{
     return this.http
-      .get(COMMUNAL_API)
+      .get(`${COMMUNAL_API}/?where={"date.year":${this.currentYear},"date.month":${this.currentMonth}}`)
       .map((response: Response) => response.json()); 
   }
+  getLastMonth(): Observable<Communal[]>{
+    return this.http
+      .get(`${COMMUNAL_API}/?where={"date.year":${this.currentYear},"date.month":${this.currentMonth-1}}`)
+      .map((response: Response) => response.json()); 
+  }
+
 }
