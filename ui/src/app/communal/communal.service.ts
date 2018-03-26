@@ -14,24 +14,31 @@ export class CommunalService {
 
   currentMonth = new Date().getMonth()+1;
   currentYear = new Date().getFullYear();
-  monthMock = {
-    "date": {
-      "year": 0,
-      "month": 0
-    },
-    "cold_water": 0,
-    "hot_water": 0,
-    "electricity_day": 0,
-    "electricity_night": 0,
-    "taxes": {
-      "cold_water_tax": 0,
-      "hot_water_tax": 0,
-      "electricity_day_tax": 0,
-      "electricity_night_tax": 0
+  monthMock(month, year) {
+    return {
+      "date": {
+        "year": year,
+        "month": month
+      },
+      "cold_water": 0,
+      "hot_water": 0,
+      "electricity_day": 0,
+      "electricity_night": 0,
+      "taxes": {
+        "cold_water_tax": 0,
+        "hot_water_tax": 0,
+        "electricity_day_tax": 0,
+        "electricity_night_tax": 0
+      }
     }
   }
   
   getCommunals(): Observable<Communal[]>{
+    return this.http
+      .get(`${COMMUNAL_API}`)
+      .map((response: Response) => response.json()); 
+  }
+  getThisMonth(): Observable<Communal[]>{
     return this.http
       .get(`${COMMUNAL_API}/?where={"date.year":${this.currentYear},"date.month":${this.currentMonth}}`)
       .map((response: Response) => response.json()); 

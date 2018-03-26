@@ -303,33 +303,6 @@ export class CommunalComponent implements OnInit{
   ngOnInit(){
     this.monthDate = this.communalService.currentMonth;
     this.yearDate = this.communalService.currentYear;
-    this.thisMonth = {
-      "date": {
-        "year": this.monthDate,
-        "month": this.yearDate
-      },
-      "cold_water": 0,
-      "hot_water": 0,
-      "electricity_day": 0,
-      "electricity_night": 0,
-      "taxes": {
-        "cold_water_tax": 0,
-        "hot_water_tax": 0,
-        "electricity_day_tax": 0,
-        "electricity_night_tax": 0
-      }
-    }
-
-    this.communalService
-      .getCommunals()
-      .subscribe((data: any) => {
-        if(data._items[0]) {
-          // gets items from server
-          this.thisMonth = data._items[0];
-        }
-        console.log('OnInit: data', data);
-        console.log('OnInit: this month', this.thisMonth); 
-      });
 
     this.communalService
     .getLastMonth()
@@ -337,9 +310,33 @@ export class CommunalComponent implements OnInit{
       // gets items from server
       this.lastMonth = data._items[0];
       console.log('getLastMonth: last month', this.lastMonth);
-      if (!this.lastMonth) this.lastMonth = this.communalService.monthMock;
+      if (!this.lastMonth) this.lastMonth = this.communalService.monthMock(this.monthDate-1, this.yearDate);
       console.log('getLastMonth: last month', this.lastMonth);
+      
+      // sets mock for this month
+      this.thisMonth = this.communalService.monthMock(this.monthDate, this.yearDate);
+      // gets taxes for mock
+      this.thisMonth.taxes.cold_water_tax = this.lastMonth.taxes.cold_water_tax;
+      this.thisMonth.taxes.hot_water_tax = this.lastMonth.taxes.hot_water_tax;
+      this.thisMonth.taxes.electricity_day_tax = this.lastMonth.taxes.electricity_day_tax;
+      this.thisMonth.taxes.electricity_night_tax = this.lastMonth.taxes.electricity_night_tax;
+
+      console.log('this month mock:', this.thisMonth);
+      // looks for real data for this month
+      this.communalService
+      .getThisMonth()
+      .subscribe((data: any) => {
+        if(data._items[0]) {
+          // gets items from server
+          this.thisMonth = data._items[0];
+          console.log("THERE ARE ITEMS!!");
+        }
+        console.log('OnInit: data', data);
+        console.log('OnInit: this month', this.thisMonth); 
+      });
+
     });
+
     
     this.totals = {
       "cold_water": {
