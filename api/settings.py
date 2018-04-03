@@ -11,6 +11,7 @@ RESOURCE_METHODS = ['GET', 'POST']
 ITEM_METHODS = ['GET', 'PUT', 'DELETE']
 IF_MATCH = False
 X_DOMAINS = '*'
+X_HEADERS = ['Content-type']
 
 cs_bills = {
     'item_title': 'cs_bill',

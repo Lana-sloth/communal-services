@@ -13,10 +13,6 @@ import { isArray } from 'util';
   template: `
     <br>
     <div *ngIf='thisMonth' class='row'>
-      <!-- <card-component class='col-md-3'
-        *ngFor='let communal of communals'
-        [card]='communal'>
-      </card-component> -->
      
       <div class='col-md-12'>
         <p class="text-center"> {{ this.monthDate }}, {{ this.yearDate }} </p>
@@ -283,7 +279,7 @@ import { isArray } from 'util';
       <h3 class="text-center"> Total: {{ total }} &#8381; </h3>
     </div>
 
-    <pre>{{ thisMonth | json }}</pre>
+    <!-- <pre>{{ thisMonth | json }}</pre> -->
     <button (click)='calculate()'>Calculate</button>
   
   `
@@ -293,9 +289,8 @@ export class CommunalComponent implements OnInit{
   totals;
   monthDate;
   yearDate;
-  communals: any;
   lastMonth;
-  thisMonth: Communal;
+  thisMonth: any;
   thisMonthDefined: boolean = false;
   
   constructor(private communalService: CommunalService){}
@@ -310,8 +305,10 @@ export class CommunalComponent implements OnInit{
       // gets items from server
       this.lastMonth = data._items[0];
       console.log('getLastMonth: last month', this.lastMonth);
-      if (!this.lastMonth) this.lastMonth = this.communalService.monthMock(this.monthDate-1, this.yearDate);
-      console.log('getLastMonth: last month', this.lastMonth);
+      if (!this.lastMonth) {
+        this.lastMonth = this.communalService.monthMock(this.monthDate-1, this.yearDate);
+        console.log('getLastMonth: last month not found, using mock', this.lastMonth);
+      }
       
       // sets mock for this month
       this.thisMonth = this.communalService.monthMock(this.monthDate, this.yearDate);
@@ -333,11 +330,10 @@ export class CommunalComponent implements OnInit{
         }
         console.log('OnInit: data', data);
         console.log('OnInit: this month', this.thisMonth); 
+        console.log('OnInit: id', this.thisMonth._id);
       });
-
     });
 
-    
     this.totals = {
       "cold_water": {
         "isEditing": false,
@@ -362,18 +358,6 @@ export class CommunalComponent implements OnInit{
     };
     this.total = 0
   } // ngOnInit end
-
-  getLastItem(){
-    // if list is undefined or empty, return mock
-    if(!this.communals || !this.communals.length) {
-      console.log('getLastItem: list is', this.communals);
-      return;
-    }
-    // else return last month from list
-    let last = this.communals.length - 1;
-    console.log('getLastItem: found and is', this.communals[last].date)
-    return this.communals[last];
-  }
   
   toggleEdit(card){
     if (card == 'cold_water') 
@@ -402,6 +386,20 @@ export class CommunalComponent implements OnInit{
     }
   }
 
+  editCommunal(event: Communal){
+    // updates information on server
+    this.communalService
+    .updateCommunal(event)
+    .subscribe((data: Communal) => {
+      this.thisMonth = this.thisMonth.map((data: Communal) => {
+        console.log('editCommunal: the dates are matching', data);
+        // if(data.date === this.thisMonth.date){
+        //   console.log('editCommunal: the dates are matching', data.date);
+        // }
+      })
+    });
+  }
+
   calculate(){
     let t = this.totals;
     let x = this.thisMonth.taxes;
@@ -423,6 +421,10 @@ export class CommunalComponent implements OnInit{
     // counts total result
     let spentTotal = t.cold_water.cost + t.hot_water.cost + t.electricity_day.cost + t.electricity_night.cost;
     this.total = _.round(spentTotal, 2);
+
+    // updates information on server
+    console.log('thisMonth type', typeof(JSON.stringify(this.thisMonth)));
+    this.editCommunal(this.thisMonth);
   }
 
 }

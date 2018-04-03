@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Http, Response } from '@angular/http';
-
+import { Headers } from '@angular/http';
 import { Communal } from '../communal/containers/models/communal.models';
 
 import { Observable } from 'rxjs/Observable';
@@ -36,6 +36,11 @@ export class CommunalService {
   getCommunals(): Observable<Communal[]>{
     return this.http
       .get(`${COMMUNAL_API}`)
+      .map((response: Response) => response.json()); 
+  }
+  updateCommunal(communal: Communal): Observable<Communal>{
+    return this.http
+      .post(`${COMMUNAL_API}`, communal)
       .map((response: Response) => response.json()); 
   }
   getThisMonth(): Observable<Communal[]>{
